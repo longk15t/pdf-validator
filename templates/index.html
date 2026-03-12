@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Insurance Confirmation PDF Generator - Fill in the form and export a professionally formatted PDF.">
+    <title>Insurance Confirmation PDF Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --bg-input: #0a0a1a;
+            --accent-primary: #00d4aa;
+            --accent-secondary: #0ea5e9;
+            --accent-gradient: linear-gradient(135deg, #00d4aa, #0ea5e9);
+            --text-primary: #e8e8f0;
+            --text-secondary: #9898b0;
+            --text-label: #c0c0d8;
+            --border-color: #2a2a4a;
+            --border-focus: #00d4aa;
+            --shadow-glow: 0 0 20px rgba(0, 212, 170, 0.15);
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(0, 212, 170, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(14, 165, 233, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 90%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .header-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            background: var(--accent-gradient);
+            border-radius: 18px;
+            margin-bottom: 16px;
+            font-size: 28px;
+            box-shadow: 0 8px 24px rgba(0, 212, 170, 0.25);
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 300;
+        }
+
+        /* Sections */
+        .section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-card);
+            animation: fadeInUp 0.6s ease-out;
+            animation-fill-mode: both;
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            border-color: rgba(0, 212, 170, 0.3);
+            box-shadow: var(--shadow-card), var(--shadow-glow);
+        }
+
+        .section:nth-child(2) { animation-delay: 0.05s; }
+        .section:nth-child(3) { animation-delay: 0.1s; }
+        .section:nth-child(4) { animation-delay: 0.15s; }
+        .section:nth-child(5) { animation-delay: 0.2s; }
+        .section:nth-child(6) { animation-delay: 0.25s; }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title .icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: rgba(0, 212, 170, 0.12);
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+        }
+
+        /* Form grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .form-grid .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-grid .half-width {
+            grid-column: span 1;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--text-label);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input[type="text"],
+        .form-group textarea {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group textarea:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.12);
+        }
+
+        .form-group input[type="text"]::placeholder,
+        .form-group textarea::placeholder {
+            color: #4a4a6a;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        /* Checkbox groups */
+        .checkbox-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: center;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+            align-items: center;
+        }
+
+        .checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: var(--text-label);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .checkbox-label:hover {
+            color: var(--text-primary);
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-input);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .checkbox-label input[type="checkbox"]:checked {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .checkbox-label input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #000;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .checkbox-label input[type="checkbox"]:focus {
+            box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.15);
+        }
+
+        /* Inline field groups */
+        .inline-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .inline-group .form-group {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .inline-group .form-group.narrow {
+            flex: 0 0 80px;
+            min-width: 80px;
+        }
+
+        .inline-group .form-group.medium {
+            flex: 0 0 140px;
+            min-width: 140px;
+        }
+
+        /* Sub-section label */
+        .sub-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-top: 12px;
+            margin-bottom: 6px;
+        }
+
+        /* Divider */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 18px 0;
+        }
+
+        /* Submit button */
+        .submit-container {
+            text-align: center;
+            margin-top: 36px;
+            animation: fadeInUp 0.6s ease-out 0.3s both;
+        }
+
+        .btn-submit {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 48px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            color: #000;
+            background: var(--accent-gradient);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 20px rgba(0, 212, 170, 0.3);
+            letter-spacing: 0.3px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 212, 170, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit .btn-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container { padding: 20px 12px 40px; }
+            h1 { font-size: 1.5rem; }
+            .section { padding: 20px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .btn-submit { width: 100%; justify-content: center; }
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--bg-card);
+            border: 1px solid var(--accent-primary);
+            border-radius: var(--radius-md);
+            padding: 14px 24px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3a3a5a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-icon">📄</div>
+            <h1>Insurance Confirmation</h1>
+            <p>Fill in the form below and export a professionally formatted PDF</p>
+        </div>
+
+        <form id="insuranceForm" action="/generate" method="POST">
+
+            <!-- ===== SUBSCRIBER / PATIENT INFO ===== -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="icon">👤</span>
+                    Subscriber & Patient Information
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="subscriber_name">Subscriber Name</label>
+                        <input type="text" id="subscriber_name" name="subscriber_name" placeholder="Full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="subscriber_dob">Subscriber DOB</label>
+                        <input type="text" id="subscriber_dob" name="subscriber_dob" placeholder="MM/DD/YYYY">
+                    </div>
+                    <div class="form-group">
+                        <label for="patient_name">Patient Name</label>
+                        <input type="text" id="patient_name" name="patient_name" placeholder="Full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="patient_dob">Patient DOB</label>
+                        <input type="text" id="patient_dob" name="patient_dob" placeholder="MM/DD/YYYY">
+                    </div>
+                    <div class="form-group">
+                        <label for="member_id">Member ID#</label>
+                        <input type="text" id="member_id" name="member_id" placeholder="ID number">
+                    </div>
+                    <div class="form-group">
+                        <label for="ss_number">SS#</label>
+                        <input type="text" id="ss_number" name="ss_number" placeholder="Social Security #">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="reference_number">Reference# for Call</label>
+                        <input type="text" id="reference_number" name="reference_number" placeholder="Reference number">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== EMPLOYER / GROUP INFO ===== -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="icon">🏢</span>
+                    Employer & Group Information
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="employer">Employer</label>
+                        <input type="text" id="employer" name="employer" placeholder="Employer name">
+                    </div>
+                    <div class="form-group">
+                        <label for="group_number">Group#</label>
+                        <input type="text" id="group_number" name="group_number" placeholder="Group number">
+                    </div>
+                    <div class="form-group">
+                        <label for="payor_id">Payor ID#</label>
+                        <input type="text" id="payor_id" name="payor_id" placeholder="Payor ID">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="group_name">Group Name</label>
+                        <input type="text" id="group_name" name="group_name" placeholder="Group name">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== INSURANCE INFORMATION ===== -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="icon">🛡️</span>
+                    Insurance Information
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="date_verified">Date Verified</label>
+                        <input type="text" id="date_verified" name="date_verified" placeholder="MM/DD/YYYY">
+                    </div>
+                    <div class="form-group">
+                        <label for="effective_date">Effective Date</label>
+                        <input type="text" id="effective_date" name="effective_date" placeholder="MM/DD/YYYY">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="insurance_company">Insurance Company</label>
+                        <input type="text" id="insurance_company" name="insurance_company" placeholder="Company name">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="claims_address">Claims Address</label>
+                        <input type="text" id="claims_address" name="claims_address" placeholder="Street address">
+                    </div>
+                    <div class="form-group">
+                        <label for="claims_city">City</label>
+                        <input type="text" id="claims_city" name="claims_city" placeholder="City">
+                    </div>
+                    <div class="form-group">
+                        <label for="claims_state">State</label>
+                        <input type="text" id="claims_state" name="claims_state" placeholder="State">
+                    </div>
+                    <div class="form-group">
+                        <label for="claims_zip">Zip</label>
+                        <input type="text" id="claims_zip" name="claims_zip" placeholder="Zip code">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone#</label>
+                        <input type="text" id="phone" name="phone" placeholder="Phone number">
+                    </div>
+                    <div class="form-group">
+                        <label for="fax">Fax#</label>
+                        <input type="text" id="fax" name="fax" placeholder="Fax number">
+                    </div>
+
+                    <hr class="divider full-width">
+
+                    <!-- Network -->
+                    <div class="form-group full-width">
+                        <label>IN/OUT Network?</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="network_in"> IN</label>
+                            <label class="checkbox-label"><input type="checkbox" name="network_out"> OUT</label>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="month_start">Calendar/Contract Yr - Month Start</label>
+                        <input type="text" id="month_start" name="month_start" placeholder="Month">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="max_per_year">Max Per Year ($)</label>
+                        <input type="text" id="max_per_year" name="max_per_year" placeholder="Amount">
+                    </div>
+                    <div class="form-group">
+                        <label for="used_amount">Used ($)</label>
+                        <input type="text" id="used_amount" name="used_amount" placeholder="Amount">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="deductible">Deductible ($)</label>
+                        <input type="text" id="deductible" name="deductible" placeholder="Amount">
+                    </div>
+                    <div class="form-group">
+                        <label for="deductible_slash">/ (other)</label>
+                        <input type="text" id="deductible_slash" name="deductible_slash" placeholder="">
+                    </div>
+                    <div class="form-group">
+                        <label for="family_deductible">Family Deductible ($)</label>
+                        <input type="text" id="family_deductible" name="family_deductible" placeholder="Amount">
+                    </div>
+                    <div class="form-group">
+                        <label for="family_deductible_slash">/ (other)</label>
+                        <input type="text" id="family_deductible_slash" name="family_deductible_slash" placeholder="">
+                    </div>
+
+                    <hr class="divider full-width">
+
+                    <div class="form-group full-width">
+                        <label>Waiting Period</label>
+                        <div class="checkbox-row">
+                            <div class="checkbox-group">
+                                <label class="checkbox-label"><input type="checkbox" name="waiting_yes"> Yes</label>
+                                <label class="checkbox-label"><input type="checkbox" name="waiting_no"> No</label>
+                            </div>
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label for="waiting_how_long">If Yes, How Long</label>
+                                <input type="text" id="waiting_how_long" name="waiting_how_long" placeholder="Duration">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Missing Tooth Clause</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="missing_tooth_yes"> Yes</label>
+                            <label class="checkbox-label"><input type="checkbox" name="missing_tooth_no"> No</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="age_limit_coverage">Age Limit for Coverage</label>
+                        <input type="text" id="age_limit_coverage" name="age_limit_coverage" placeholder="Age">
+                    </div>
+                    <div class="form-group">
+                        <label for="claim_filing_deadline">Claim Filing Deadline</label>
+                        <input type="text" id="claim_filing_deadline" name="claim_filing_deadline" placeholder="Deadline">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="coordination_benefits">Co-ordination of Benefits</label>
+                        <input type="text" id="coordination_benefits" name="coordination_benefits" placeholder="Details">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== BENEFIT COVERAGE ===== -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="icon">💰</span>
+                    Benefit Coverage
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="level1_preventive">Level 1 - Preventive (%)</label>
+                        <input type="text" id="level1_preventive" name="level1_preventive" placeholder="%">
+                    </div>
+                    <div class="form-group">
+                        <label for="level2_basic">Level 2 - Basic (%)</label>
+                        <input type="text" id="level2_basic" name="level2_basic" placeholder="%">
+                    </div>
+                    <div class="form-group">
+                        <label for="level3_major">Level 3 - Major (%)</label>
+                        <input type="text" id="level3_major" name="level3_major" placeholder="%">
+                    </div>
+
+                    <hr class="divider full-width">
+
+                    <div class="form-group">
+                        <label for="endo_pct">Endo (%)</label>
+                        <input type="text" id="endo_pct" name="endo_pct" placeholder="%">
+                    </div>
+                    <div class="form-group">
+                        <label for="perio_pct">Perio (%)</label>
+                        <input type="text" id="perio_pct" name="perio_pct" placeholder="%">
+                    </div>
+                    <div class="form-group">
+                        <label for="oral_surgery_pct">Oral Surgery (%)</label>
+                        <input type="text" id="oral_surgery_pct" name="oral_surgery_pct" placeholder="%">
+                    </div>
+                    <div class="form-group">
+                        <label for="buildup_pct">Buildup 2950 (%)</label>
+                        <input type="text" id="buildup_pct" name="buildup_pct" placeholder="%">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== FREQUENCIES / LIMITATIONS ===== -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="icon">📊</span>
+                    Frequencies & Limitations
+                </div>
+
+                <!-- Pan/FMX -->
+                <div class="sub-label">Pan / FMX</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="pan_fmx_pct">Covered (%)</label>
+                        <input type="text" id="pan_fmx_pct" name="pan_fmx_pct" placeholder="%">
+                    </div>
+                    <div class="form-group">
+                        <label>Frequency</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="pan_fmx_3yrs"> 3 yrs</label>
+                            <label class="checkbox-label"><input type="checkbox" name="pan_fmx_5yrs"> 5 yrs</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pan_fmx_last_taken">Last Taken</label>
+                        <input type="text" id="pan_fmx_last_taken" name="pan_fmx_last_taken" placeholder="Date">
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- Exams -->
+                <div class="sub-label">Exams Covered (0120/0180)</div>
+                <div class="checkbox-group" style="margin-bottom: 12px;">
+                    <label class="checkbox-label"><input type="checkbox" name="exams_1x6mo"> 1x per 6 months</label>
+                    <label class="checkbox-label"><input type="checkbox" name="exams_2xyr"> 2x per year</label>
+                </div>
+
+                <hr class="divider">
+
+                <!-- Cleanings -->
+                <div class="sub-label">Cleanings (1110/1120)</div>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label>Frequency</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="cleanings_1x6mo"> 1x per 6 months</label>
+                            <label class="checkbox-label"><input type="checkbox" name="cleanings_2xyr"> 2x per year</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="adult_prophy_age">Age for Adult Prophy (& over)</label>
+                        <input type="text" id="adult_prophy_age" name="adult_prophy_age" placeholder="Age">
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- Limited Exam -->
+                <div class="sub-label">Limited Exam D0140</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="limited_exam_pct">Covered @ (%)</label>
+                        <input type="text" id="limited_exam_pct" name="limited_exam_pct" placeholder="%">
+                    </div>
+                    <div class="form-group">
+                        <label>Share Freq?</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="share_freq_yes"> Y</label>
+                            <label class="checkbox-label"><input type="checkbox" name="share_freq_no"> N</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Same Day TX?</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="same_day_tx_yes"> Y</label>
+                            <label class="checkbox-label"><input type="checkbox" name="same_day_tx_no"> N</label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- BWX -->
+                <div class="sub-label">BWX (0274/0272)</div>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label>Frequency</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="bwx_1x6mo"> 1x per 6 months</label>
+                            <label class="checkbox-label"><input type="checkbox" name="bwx_1xyr"> 1x per year</label>
+                            <label class="checkbox-label"><input type="checkbox" name="bwx_2xyr"> 2x per year</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="bwx_last_taken">Last Taken</label>
+                        <input type="text" id="bwx_last_taken" name="bwx_last_taken" placeholder="Date">
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- PAs -->
+                <div class="sub-label">PA's 0220/0230</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="pas_pct">Covered (%)</label>
+                        <input type="text" id="pas_pct" name="pas_pct" placeholder="%">
+                    </div>
+                    <div class="form-group">
+                        <label for="pas_freq">Freq</label>
+                        <input type="text" id="pas_freq" name="pas_freq" placeholder="Frequency">
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- Fluoride -->
+                <div class="sub-label">Fluoride (1206)</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="fluoride_pct">Covered @ (%)</label>
+                        <input type="text" id="fluoride_pct" name="fluoride_pct" placeholder="%">
+                    </div>
+                    <div class="form-group">
+                        <label for="fluoride_age">Up to Age</label>
+                        <input type="text" id="fluoride_age" name="fluoride_age" placeholder="Age">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Frequency</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="fluoride_1x6mo"> 1x per 6 months</label>
+                            <label class="checkbox-label"><input type="checkbox" name="fluoride_1xyr"> 1x per year</label>
+                            <label class="checkbox-label"><input type="checkbox" name="fluoride_2xyr"> 2x per year</label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- Sealants -->
+                <div class="sub-label">Sealants (1351)</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="sealants_pct">Covered @ (%)</label>
+                        <input type="text" id="sealants_pct" name="sealants_pct" placeholder="%">
+                    </div>
+                    <div class="form-group">
+                        <label for="sealants_age">Up to Age</label>
+                        <input type="text" id="sealants_age" name="sealants_age" placeholder="Age">
+                    </div>
+                    <div class="form-group">
+                        <label for="sealants_times_per">Times Per</label>
+                        <input type="text" id="sealants_times_per" name="sealants_times_per" placeholder="Frequency">
+                    </div>
+                    <div class="form-group">
+                        <label>Premolars?</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="premolars_yes"> Y</label>
+                            <label class="checkbox-label"><input type="checkbox" name="premolars_no"> N</label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- Replacement Period -->
+                <div class="sub-label">Prosthodontics & Crowns</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="replacement_period">Replacement Period (years)</label>
+                        <input type="text" id="replacement_period" name="replacement_period" placeholder="Years">
+                    </div>
+                    <div class="form-group">
+                        <label>Pays On</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="pays_on_prep"> Prep</label>
+                            <label class="checkbox-label"><input type="checkbox" name="pays_on_seat"> Seat</label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- Fillings -->
+                <div class="sub-label">Fillings & Downgrades</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="filling_freq">Filling Freq (1 per)</label>
+                        <input type="text" id="filling_freq" name="filling_freq" placeholder="Period">
+                    </div>
+                    <div class="form-group">
+                        <label>Downgrades on Fillings?</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="filling_downgrade_yes"> Yes</label>
+                            <label class="checkbox-label"><input type="checkbox" name="filling_downgrade_no"> No</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Downgrades on Crowns?</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="crown_downgrade_yes"> Yes</label>
+                            <label class="checkbox-label"><input type="checkbox" name="crown_downgrade_no"> No</label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- D4346 -->
+                <div class="sub-label">D4346</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="d4346_pct">Covered @ (%)</label>
+                        <input type="text" id="d4346_pct" name="d4346_pct" placeholder="%">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Frequency</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="d4346_1x6mo"> 1x per 6 mos</label>
+                            <label class="checkbox-label"><input type="checkbox" name="d4346_1xyr"> 1x per year</label>
+                            <label class="checkbox-label"><input type="checkbox" name="d4346_2xyr"> 2x per year</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Shares w/ Prophy?</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="d4346_shares_yes"> Y</label>
+                            <label class="checkbox-label"><input type="checkbox" name="d4346_shares_no"> N</label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- D4355 -->
+                <div class="sub-label">D4355</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="d4355_pct">Covered @ (%)</label>
+                        <input type="text" id="d4355_pct" name="d4355_pct" placeholder="%">
+                    </div>
+                    <div class="form-group">
+                        <label for="d4355_times_per">Times Per</label>
+                        <input type="text" id="d4355_times_per" name="d4355_times_per" placeholder="Frequency">
+                    </div>
+                    <div class="form-group">
+                        <label>Shares w/ Prophy?</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="d4355_shares_yes"> Y</label>
+                            <label class="checkbox-label"><input type="checkbox" name="d4355_shares_no"> N</label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- SRP -->
+                <div class="sub-label">SRP (4342/4341)</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="srp_pct">Covered @ (%)</label>
+                        <input type="text" id="srp_pct" name="srp_pct" placeholder="%">
+                    </div>
+                    <div class="form-group">
+                        <label for="srp_times_per">Times Per</label>
+                        <input type="text" id="srp_times_per" name="srp_times_per" placeholder="Frequency">
+                    </div>
+                    <div class="form-group">
+                        <label>All 4 Quads Same Day?</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="srp_quads_yes"> Y</label>
+                            <label class="checkbox-label"><input type="checkbox" name="srp_quads_no"> N</label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- Perio Maintenance -->
+                <div class="sub-label">Perio Maintenance (4910)</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="perio_maint_pct">Covered @ (%)</label>
+                        <input type="text" id="perio_maint_pct" name="perio_maint_pct" placeholder="%">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Frequency</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="perio_maint_1x6mo"> 1x per 6 mos</label>
+                            <label class="checkbox-label"><input type="checkbox" name="perio_maint_1x"> 2</label>
+                            <label class="checkbox-label"><input type="checkbox" name="perio_maint_4xyr"> 4x per yr</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Shares w/ Prophy?</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="perio_shares_yes"> Y</label>
+                            <label class="checkbox-label"><input type="checkbox" name="perio_shares_no"> N</label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- Occlusal Guard -->
+                <div class="sub-label">Occlusal Guard Coverage (9944)</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="occlusal_pct">Covered (%)</label>
+                        <input type="text" id="occlusal_pct" name="occlusal_pct" placeholder="%">
+                    </div>
+                    <div class="form-group">
+                        <label for="occlusal_per">Per</label>
+                        <input type="text" id="occlusal_per" name="occlusal_per" placeholder="Period">
+                    </div>
+                    <div class="form-group">
+                        <label>Bruxism Only?</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="bruxism_yes"> Y</label>
+                            <label class="checkbox-label"><input type="checkbox" name="bruxism_no"> N</label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- Implant -->
+                <div class="sub-label">Implant (6010) & Abutment</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="implant_pct">Implant (%)</label>
+                        <input type="text" id="implant_pct" name="implant_pct" placeholder="%">
+                    </div>
+                    <div class="form-group">
+                        <label>Abutment Placement (5057)</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="abutment_placement_yes"> Y</label>
+                            <label class="checkbox-label"><input type="checkbox" name="abutment_placement_no"> N</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Abutment/Crown (6058-6059)</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="abutment_crown_yes"> Y</label>
+                            <label class="checkbox-label"><input type="checkbox" name="abutment_crown_no"> N</label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- Bone Graft / Surgical -->
+                <div class="sub-label">Additional Procedures</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="bone_graft_pct">Bone Graft Replacement D7953 (%)</label>
+                        <input type="text" id="bone_graft_pct" name="bone_graft_pct" placeholder="%">
+                    </div>
+                    <div class="form-group">
+                        <label for="surgical_extraction_pct">Surgical Extractions D7220-D7250 (%)</label>
+                        <input type="text" id="surgical_extraction_pct" name="surgical_extraction_pct" placeholder="%">
+                    </div>
+                    <div class="form-group">
+                        <label>Surgical Type</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="surgical_dental"> Dental</label>
+                            <label class="checkbox-label"><input type="checkbox" name="surgical_medical"> Medical</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== NOTES ===== -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="icon">📝</span>
+                    Notes
+                </div>
+                <div class="form-group">
+                    <textarea id="notes" name="notes" placeholder="Additional notes..."></textarea>
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="submit-container">
+                <button type="submit" class="btn-submit" id="btnSubmit">
+                    <span class="btn-icon">📥</span>
+                    Export PDF
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast">✅ PDF generated successfully!</div>
+
+    <script>
+        // Show toast after form submit
+        const form = document.getElementById('insuranceForm');
+        form.addEventListener('submit', function() {
+            setTimeout(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            }, 500);
+        });
+    </script>
+</body>
+</html>
